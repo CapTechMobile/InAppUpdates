@@ -6,6 +6,8 @@ import android.content.IntentSender;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.captech.inappupdates.settings.SettingsFragment;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -28,9 +31,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements OnSuccessListener<AppUpdateInfo> {
 
+    private static final int MENU_FLEXIBLE_UPDATE = Menu.FIRST;
+    private static final int MENU_SETTINGS = Menu.FIRST + 1;
+
     private TextView mVersionNumber;
     private RecyclerView mEmployeeList;
     private AppUpdateManager appUpdateManager;
+    private boolean mNeedsFlexibleUpdate;
     private static final int REQUEST_CODE = 123456789;
 
     @Override
@@ -45,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
         setEmployeeAdapter();
         setVersionText();
+
+        mNeedsFlexibleUpdate = false;
     }
 
     @Override
@@ -67,6 +76,16 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+        if(mNeedsFlexibleUpdate) {
+            menu.add(0, MENU_FLEXIBLE_UPDATE, Menu.NONE, R.string.flexible_update_item);
+        }
+        menu.add(1, R.id.action_settings, Menu.NONE, R.string.action_settings);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -75,6 +94,13 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Fragment settingsFragment = new SettingsFragment();
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, settingsFragment);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.addToBackStack(null);
+            ft.commit();
             return true;
         }
 

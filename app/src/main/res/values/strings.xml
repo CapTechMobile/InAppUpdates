@@ -6,4 +6,9 @@
     <string name="main_version_number">Version number</string>
     <string name="employee_picture">Employee picture</string>
     <string name="employee_name">Employee name</string>
+
+    <string name="flexible_update_item">Update App...</string>
+    <string name="update_needed">Update needed</string>
+    <string name="about_app">About Us...</string>
+
 </resources>
