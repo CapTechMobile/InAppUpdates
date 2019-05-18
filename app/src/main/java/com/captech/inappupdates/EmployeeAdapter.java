@@ -1,4 +1,4 @@
-package com.example.inappupdates;
+package com.captech.inappupdates;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.example.inappupdates;
+package com.captech.inappupdates;
 
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
