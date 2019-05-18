@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,11 +21,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.captech.inappupdates.settings.SettingsFragment;
+import com.captech.inappupdates.settings.MoreFragment;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnSuccessListener;
 
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     private RecyclerView mEmployeeList;
     private AppUpdateManager appUpdateManager;
     private boolean mNeedsFlexibleUpdate;
-    private static final int REQUEST_CODE = 123456789;
+    public static final int REQUEST_CODE = 123456789;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         if(mNeedsFlexibleUpdate) {
             menu.add(0, MENU_FLEXIBLE_UPDATE, Menu.NONE, R.string.flexible_update_item);
         }
-        menu.add(1, R.id.action_settings, Menu.NONE, R.string.action_settings);
+        menu.add(1, R.id.action_settings, Menu.NONE, R.string.action_more);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Fragment settingsFragment = new SettingsFragment();
+            Fragment settingsFragment = new MoreFragment();
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_container, settingsFragment);
@@ -133,25 +136,14 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         if (appUpdateInfo.updateAvailability()
                 == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
             // If an in-app update is already running, resume the update.
-            try {
-                appUpdateManager.startUpdateFlowForResult(
-                        appUpdateInfo,
-                        AppUpdateType.IMMEDIATE,
-                        this,
-                        REQUEST_CODE);
-            } catch (IntentSender.SendIntentException e) {
-                e.printStackTrace();
-            }
+            startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
+        } else if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+            // If the update is downloaded but not installed,
+            // notify the user to complete the update.
+            popupSnackbarForCompleteUpdate();
         } else if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-            try {
-                appUpdateManager.startUpdateFlowForResult(appUpdateInfo,
-                        AppUpdateType.IMMEDIATE,
-                        this,
-                        REQUEST_CODE);
-            } catch (IntentSender.SendIntentException e) {
-                e.printStackTrace();
-            }
+            startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
         }
     }
 
@@ -163,6 +155,36 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
             } else {
                 Log.e(MainActivity.class.getSimpleName(), "Update flow failed! Result code: " + resultCode);
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void startUpdate(AppUpdateInfo appUpdateInfo, int appUpdateType) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(appUpdateInfo,
+                    appUpdateType,
+                    this,
+                    REQUEST_CODE);
+        } catch (IntentSender.SendIntentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /* Displays the snackbar notification and call to action. */
+    private void popupSnackbarForCompleteUpdate() {
+        Snackbar snackbar =
+                Snackbar.make(
+                        findViewById(R.id.main_activity),
+                        "An update has just been downloaded.",
+                        Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("RESTART", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appUpdateManager.completeUpdate();
+            }
+        });
+        snackbar.setActionTextColor(Color.RED);
+        snackbar.show();
     }
 }
