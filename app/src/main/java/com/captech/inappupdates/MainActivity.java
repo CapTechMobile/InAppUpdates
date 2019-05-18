@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     private RecyclerView mEmployeeList;
     private AppUpdateManager appUpdateManager;
     private boolean mNeedsFlexibleUpdate;
-    public static final int REQUEST_CODE = 123456789;
+    public static final int REQUEST_CODE = 1234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
