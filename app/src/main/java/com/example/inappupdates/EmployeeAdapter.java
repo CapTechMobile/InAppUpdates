@@ -6,12 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class EmployeeAdapter extends RecyclerView.Adapter {
+public class EmployeeAdapter extends RecyclerView.Adapter implements AdapterView.OnItemClickListener {
 
     private List<Employee> mEmployees;
 
@@ -52,12 +53,18 @@ public class EmployeeAdapter extends RecyclerView.Adapter {
         // Set item views based on your views and data model
         TextView textView = employeeViewHolder.nameTextView;
         textView.setText(employee.getName());
-        ImageView picture = employeeViewHolder.pictureImageView;
+        ImageView imageView = employeeViewHolder.pictureImageView;
+        imageView.setImageResource(employee.getPictureId());
         //TODO set picture
     }
 
     @Override
     public int getItemCount() {
         return mEmployees.size();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
     }
 }
