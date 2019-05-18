@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         employeeList.add(new Employee("Alisher Pazylbekov", R.drawable.profilepicture1));
         employeeList.add(new Employee("JP Garduno", R.drawable.profilepicture2));
 
-        EmployeeAdapter adapter = new EmployeeAdapter(employeeList);
+        EmployeeAdapter adapter = new EmployeeAdapter(this, employeeList);
 
         mEmployeeList.setAdapter(adapter);
         mEmployeeList.setLayoutManager(new LinearLayoutManager(this));

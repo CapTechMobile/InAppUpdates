@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 public class Employee {
 
+    public static String EMPLOYEE_NAME = "employee_name";
+    public static String EMPLOYEE_PICTURE_ID = "employee_picture_id";
+
+
     private String mName;
     private int mPictureId;
 

@@ -1,26 +1,33 @@
 package com.captech.inappupdates;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.captech.inappupdates.employee.EmployeeFragment;
+
 import java.util.List;
 
-public class EmployeeAdapter extends RecyclerView.Adapter implements AdapterView.OnItemClickListener {
+public class EmployeeAdapter extends RecyclerView.Adapter {
 
     private List<Employee> mEmployees;
+    private Context mContext;
 
-    public EmployeeAdapter(List<Employee> employees) {
+    public EmployeeAdapter(Context context, List<Employee> employees) {
+        mContext = context;
         mEmployees = employees;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView nameTextView;
         public ImageView pictureImageView;
@@ -30,6 +37,26 @@ public class EmployeeAdapter extends RecyclerView.Adapter implements AdapterView
 
             nameTextView = itemView.findViewById(R.id.employee_name);
             pictureImageView = itemView.findViewById(R.id.employee_picture);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+
+            Employee employee = mEmployees.get(position);
+            Fragment employeeFragment = new EmployeeFragment();
+            Bundle data = new Bundle();
+            data.putString(Employee.EMPLOYEE_NAME, employee.getName());
+            data.putInt(Employee.EMPLOYEE_PICTURE_ID, employee.getPictureId());
+            employeeFragment.setArguments(data);
+
+            FragmentTransaction ft = ((AppCompatActivity)mContext).getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, employeeFragment);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.addToBackStack(null);
+            ft.commit();
         }
     }
 
@@ -55,7 +82,6 @@ public class EmployeeAdapter extends RecyclerView.Adapter implements AdapterView
         textView.setText(employee.getName());
         ImageView imageView = employeeViewHolder.pictureImageView;
         imageView.setImageResource(employee.getPictureId());
-        //TODO set picture
     }
 
     @Override
@@ -63,8 +89,8 @@ public class EmployeeAdapter extends RecyclerView.Adapter implements AdapterView
         return mEmployees.size();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-    }
+//    @Override
+//    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//    }
 }
