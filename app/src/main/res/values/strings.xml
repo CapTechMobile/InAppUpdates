@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">In App Updates</string>
     <string name="action_settings">Settings</string>
+
+    <string name="main_background">Background</string>
+    <string name="main_version_number">Version number</string>
+    <string name="employee_picture">Employee picture</string>
+    <string name="employee_name">Employee name</string>
 </resources>
