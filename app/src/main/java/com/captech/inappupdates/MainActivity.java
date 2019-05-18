@@ -122,9 +122,13 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
             // If the update is downloaded but not installed,
             // notify the user to complete the update.
             popupSnackbarForCompleteUpdate();
-        } else if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-            startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
+        } else if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+            if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
+            } else if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+                mNeedsFlexibleUpdate = true;
+                showFlexibleUpdateNotification();
+            }
         }
     }
 
@@ -166,6 +170,15 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
             }
         });
         snackbar.setActionTextColor(Color.RED);
+        snackbar.show();
+    }
+
+    private void showFlexibleUpdateNotification() {
+        Snackbar snackbar =
+                Snackbar.make(
+                        findViewById(R.id.main_activity),
+                        "An update is available and accessible in Settings.",
+                        Snackbar.LENGTH_LONG);
         snackbar.show();
     }
 
