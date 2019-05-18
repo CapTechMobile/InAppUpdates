@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.captech.inappupdates.MainActivity;
 import com.captech.inappupdates.R;
@@ -29,13 +30,17 @@ import static com.captech.inappupdates.MainActivity.REQUEST_CODE;
 public class MoreFragment extends Fragment implements InstallStateUpdatedListener, OnSuccessListener<AppUpdateInfo> {
     AppUpdateManager appUpdateManager;
 
-
-
+    public static String FLEXIBLE_UPDATE = "flexible_update";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.more_main, container, false);
 
+        Bundle bundle = getArguments();
+        boolean needsFlexibleUpdate = bundle.getBoolean(FLEXIBLE_UPDATE);
+
+        LinearLayout flexibleUpdateLayout = view.findViewById(R.id.updateContainer);
+        flexibleUpdateLayout.setVisibility(needsFlexibleUpdate ? View.VISIBLE : View.GONE);
 
         return view;
     }

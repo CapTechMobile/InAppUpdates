@@ -34,9 +34,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements OnSuccessListener<AppUpdateInfo> {
 
-    private static final int MENU_FLEXIBLE_UPDATE = Menu.FIRST;
-    private static final int MENU_SETTINGS = Menu.FIRST + 1;
-
     private TextView mVersionNumber;
     private RecyclerView mEmployeeList;
     private AppUpdateManager appUpdateManager;
@@ -79,16 +76,6 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.clear();
-        if(mNeedsFlexibleUpdate) {
-            menu.add(0, MENU_FLEXIBLE_UPDATE, Menu.NONE, R.string.flexible_update_item);
-        }
-        menu.add(1, R.id.action_settings, Menu.NONE, R.string.action_more);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -97,13 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Fragment settingsFragment = new MoreFragment();
-
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_container, settingsFragment);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.addToBackStack(null);
-            ft.commit();
+            transitionToSettingsFragment();
             return true;
         }
 
@@ -186,5 +167,18 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         });
         snackbar.setActionTextColor(Color.RED);
         snackbar.show();
+    }
+
+    private void transitionToSettingsFragment() {
+        Fragment settingsFragment = new MoreFragment();
+        Bundle data = new Bundle();
+        data.putBoolean(MoreFragment.FLEXIBLE_UPDATE, mNeedsFlexibleUpdate);
+        settingsFragment.setArguments(data);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, settingsFragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }
