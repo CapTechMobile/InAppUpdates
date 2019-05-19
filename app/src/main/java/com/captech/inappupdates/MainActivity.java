@@ -1,5 +1,6 @@
 package com.captech.inappupdates;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -65,13 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     @Override
     protected void onResume() {
         super.onResume();
-        final OnSuccessListener listener = this;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                appUpdateManager.getAppUpdateInfo().addOnSuccessListener(listener);
-            }
-        }).start();
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(this);
     }
 
     @Override
@@ -151,15 +146,21 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         }
     }
 
-    private void startUpdate(AppUpdateInfo appUpdateInfo, int appUpdateType) {
-        try {
-            appUpdateManager.startUpdateFlowForResult(appUpdateInfo,
-                    appUpdateType,
-                    this,
-                    REQUEST_CODE);
-        } catch (IntentSender.SendIntentException e) {
-            e.printStackTrace();
-        }
+    private void startUpdate(final AppUpdateInfo appUpdateInfo, final int appUpdateType) {
+        final Activity activity = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    appUpdateManager.startUpdateFlowForResult(appUpdateInfo,
+                            appUpdateType,
+                            activity,
+                            REQUEST_CODE);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     /* Displays the snackbar notification and call to action. */
