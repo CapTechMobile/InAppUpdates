@@ -2,7 +2,6 @@ package com.captech.inappupdates.more;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -99,7 +98,7 @@ public class MoreFragment extends Fragment implements InstallStateUpdatedListene
                 updateTextView.setText(R.string.downloaded_text);
                 updateButton.setVisibility(View.INVISIBLE);
                 aboutUsText.setText(R.string.success_text);
-                placeholderText.setText(R.string.flexible_update_installed);
+                placeholderText.setText(R.string.flexible_update_downloaded);
                 popupSnackbarForCompleteUpdate();
                 break;
             case InstallStatus.FAILED:
