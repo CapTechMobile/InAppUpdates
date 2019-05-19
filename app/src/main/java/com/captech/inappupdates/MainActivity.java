@@ -115,21 +115,18 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
     @Override
     public void onSuccess(AppUpdateInfo appUpdateInfo) {
-//        if (appUpdateInfo.updateAvailability()
-//                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-//            // If an in-app update is already running, resume the update.
-//            startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
-//        } else
-
-        if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+        if (appUpdateInfo.updateAvailability()
+                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+            // If an in-app update is already running, resume the update.
+            startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
+        } else if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
             // If the update is downloaded but not installed,
             // notify the user to complete the update.
             popupSnackbarForCompleteUpdate();
         } else if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
-//            if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-//                startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
-//            } else
-            if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+            if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
+            } else if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
                 mNeedsFlexibleUpdate = true;
                 showFlexibleUpdateNotification();
             }
@@ -179,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
                 appUpdateManager.completeUpdate();
             }
         });
-        snackbar.setActionTextColor(Color.RED);
+        snackbar.setActionTextColor(getResources().getColor(R.color.snackbarActionColor));
         snackbar.show();
     }
 
