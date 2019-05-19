@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     private RecyclerView mEmployeeList;
     private AppUpdateManager appUpdateManager;
     private boolean mNeedsFlexibleUpdate;
+    private Thread mCheckUpdatesThread;
     public static final int REQUEST_CODE = 1234;
 
     @Override
@@ -54,6 +55,14 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         setVersionText();
 
         mNeedsFlexibleUpdate = false;
+
+        final OnSuccessListener listener = this;
+        mCheckUpdatesThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                appUpdateManager.getAppUpdateInfo().addOnSuccessListener(listener);
+            }
+        });
     }
 
     @Override
@@ -65,7 +74,9 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     @Override
     protected void onResume() {
         super.onResume();
-        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(this);
+        if (!mCheckUpdatesThread.isAlive()) {
+            mCheckUpdatesThread.start();
+        }
     }
 
     @Override
@@ -158,28 +169,38 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
     /* Displays the snackbar notification and call to action. */
     private void popupSnackbarForCompleteUpdate() {
-        Snackbar snackbar =
-                Snackbar.make(
-                        findViewById(R.id.main_activity),
-                        "An update has just been downloaded.",
-                        Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("RESTART", new View.OnClickListener() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onClick(View view) {
-                appUpdateManager.completeUpdate();
+            public void run() {
+                Snackbar snackbar =
+                        Snackbar.make(
+                                findViewById(R.id.main_activity),
+                                "An update has just been downloaded.",
+                                Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction("RESTART", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        appUpdateManager.completeUpdate();
+                    }
+                });
+                snackbar.setActionTextColor(Color.RED);
+                snackbar.show();
             }
         });
-        snackbar.setActionTextColor(Color.RED);
-        snackbar.show();
     }
 
     private void showFlexibleUpdateNotification() {
-        Snackbar snackbar =
-                Snackbar.make(
-                        findViewById(R.id.main_activity),
-                        "An update is available and accessible in Settings.",
-                        Snackbar.LENGTH_LONG);
-        snackbar.show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar snackbar =
+                        Snackbar.make(
+                                findViewById(R.id.main_activity),
+                                "An update is available and accessible in Settings.",
+                                Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
+        });
     }
 
     private void transitionToSettingsFragment() {
