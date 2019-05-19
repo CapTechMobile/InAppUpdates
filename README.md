@@ -1,4 +1,4 @@
-## README
+# README
 
 ### This project is a demo of both existing types of In-App Updates, Immediate and Flexible.
 
@@ -10,7 +10,8 @@ Communication with the user is handled via the Snackbar object, in order to make
 The immediate update is applied without a previous prompt.
 
 
-# License
+
+## License
 Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
