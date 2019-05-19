@@ -36,7 +36,7 @@ public class MoreFragment extends Fragment implements InstallStateUpdatedListene
 
     public static String FLEXIBLE_UPDATE = "flexible_update";
     AppUpdateInfo appUpdateInfo;
-    TextView updateTextView;
+    TextView updateTextView, aboutUsText, placeholderText;
     Button updateButton;
     
     @Override
@@ -47,7 +47,9 @@ public class MoreFragment extends Fragment implements InstallStateUpdatedListene
 
         LinearLayout flexibleUpdateLayout = view.findViewById(R.id.updateContainer);
         flexibleUpdateLayout.setVisibility(needsFlexibleUpdate ? View.VISIBLE : View.GONE);
-        
+
+        aboutUsText = view.findViewById(R.id.aboutUsText);
+        placeholderText = view.findViewById(R.id.placeholderText);
         updateTextView = view.findViewById(R.id.updateView);
         updateButton = view.findViewById(R.id.updateButton);
         updateButton.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +98,8 @@ public class MoreFragment extends Fragment implements InstallStateUpdatedListene
             case InstallStatus.DOWNLOADED:
                 updateTextView.setText(R.string.downloaded_text);
                 updateButton.setVisibility(View.INVISIBLE);
+                aboutUsText.setText(R.string.success_text);
+                placeholderText.setText(R.string.flexible_update_installed);
                 popupSnackbarForCompleteUpdate();
                 break;
             case InstallStatus.FAILED:
@@ -144,7 +148,7 @@ public class MoreFragment extends Fragment implements InstallStateUpdatedListene
                 appUpdateManager.completeUpdate();
             }
         });
-        snackbar.setActionTextColor(Color.RED);
+        snackbar.setActionTextColor(getResources().getColor(R.color.snackbarActionColor));
         snackbar.show();
     }
 }
