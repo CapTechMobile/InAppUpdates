@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     private RecyclerView mEmployeeList;
     private AppUpdateManager appUpdateManager;
     private boolean mNeedsFlexibleUpdate;
-    private Thread mCheckUpdatesThread;
     public static final int REQUEST_CODE = 1234;
 
     @Override
@@ -55,14 +54,6 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         setVersionText();
 
         mNeedsFlexibleUpdate = false;
-
-        final OnSuccessListener listener = this;
-        mCheckUpdatesThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                appUpdateManager.getAppUpdateInfo().addOnSuccessListener(listener);
-            }
-        });
     }
 
     @Override
@@ -74,9 +65,13 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     @Override
     protected void onResume() {
         super.onResume();
-        if (!mCheckUpdatesThread.isAlive()) {
-            mCheckUpdatesThread.start();
-        }
+        final OnSuccessListener listener = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                appUpdateManager.getAppUpdateInfo().addOnSuccessListener(listener);
+            }
+        }).start();
     }
 
     @Override
