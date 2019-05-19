@@ -88,9 +88,4 @@ public class EmployeeAdapter extends RecyclerView.Adapter {
     public int getItemCount() {
         return mEmployees.size();
     }
-
-//    @Override
-//    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//
-//    }
 }
