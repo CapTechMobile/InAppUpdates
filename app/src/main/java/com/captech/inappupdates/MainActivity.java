@@ -22,7 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.captech.inappupdates.settings.MoreFragment;
+import com.captech.inappupdates.more.MoreFragment;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -84,8 +84,8 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            transitionToSettingsFragment();
+        if (id == R.id.more_option) {
+            transitionToMoreFragment();
             return true;
         }
 
@@ -115,18 +115,21 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
     @Override
     public void onSuccess(AppUpdateInfo appUpdateInfo) {
-        if (appUpdateInfo.updateAvailability()
-                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-            // If an in-app update is already running, resume the update.
-            startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
-        } else if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+//        if (appUpdateInfo.updateAvailability()
+//                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+//            // If an in-app update is already running, resume the update.
+//            startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
+//        } else
+
+        if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
             // If the update is downloaded but not installed,
             // notify the user to complete the update.
             popupSnackbarForCompleteUpdate();
         } else if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
-            if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-                startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
-            } else if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+//            if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+//                startUpdate(appUpdateInfo, AppUpdateType.IMMEDIATE);
+//            } else
+            if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
                 mNeedsFlexibleUpdate = true;
                 showFlexibleUpdateNotification();
             }
@@ -165,48 +168,38 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
     /* Displays the snackbar notification and call to action. */
     private void popupSnackbarForCompleteUpdate() {
-        runOnUiThread(new Runnable() {
+        Snackbar snackbar =
+                Snackbar.make(
+                        findViewById(R.id.main_activity),
+                        "An update has just been downloaded.",
+                        Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("RESTART", new View.OnClickListener() {
             @Override
-            public void run() {
-                Snackbar snackbar =
-                        Snackbar.make(
-                                findViewById(R.id.main_activity),
-                                "An update has just been downloaded.",
-                                Snackbar.LENGTH_INDEFINITE);
-                snackbar.setAction("RESTART", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        appUpdateManager.completeUpdate();
-                    }
-                });
-                snackbar.setActionTextColor(Color.RED);
-                snackbar.show();
+            public void onClick(View view) {
+                appUpdateManager.completeUpdate();
             }
         });
+        snackbar.setActionTextColor(Color.RED);
+        snackbar.show();
     }
 
     private void showFlexibleUpdateNotification() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar snackbar =
-                        Snackbar.make(
-                                findViewById(R.id.main_activity),
-                                "An update is available and accessible in Settings.",
-                                Snackbar.LENGTH_LONG);
-                snackbar.show();
-            }
-        });
+        Snackbar snackbar =
+                Snackbar.make(
+                        findViewById(R.id.main_activity),
+                        "An update is available and accessible in More.",
+                        Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
-    private void transitionToSettingsFragment() {
-        Fragment settingsFragment = new MoreFragment();
+    private void transitionToMoreFragment() {
+        Fragment moreFragment = new MoreFragment();
         Bundle data = new Bundle();
         data.putBoolean(MoreFragment.FLEXIBLE_UPDATE, mNeedsFlexibleUpdate);
-        settingsFragment.setArguments(data);
+        moreFragment.setArguments(data);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, settingsFragment);
+        ft.replace(R.id.fragment_container, moreFragment);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.commit();
